@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.flowers.ejb"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.flowers.entity"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JBoss"/>
 	<classpathentry kind="output" path="out/ide"/>
 </classpath>
