@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ====================================================================== 
+     Flower Entities    
+                   
+     odemirci                                                                
+     ====================================================================== -->
+<project name="org.flowers.entity" basedir=".">
+
+	<property file="build.properties"/>
+	
+	<target name="init">
+		<mkdir dir="${dir.out}" />
+		<mkdir dir="${dir.out.main}" />
+		<mkdir dir="${dir.out.test}" />
+		<mkdir dir="${dir.out.dist}" />
+		<mkdir dir="${dir.out.manifest}" />
+	</target>
+
+	<path id="build.main.classpath">
+		<fileset dir="${JBOSS_HOME}/modules">
+	    	<include name="**/*.jar"/>
+		</fileset>
+	</path>
+	
+	<target name="compile.main" description="compiles the main classes" depends="init">
+		<javac srcdir="${dir.src.main}" destdir="${dir.out.main}" classpathref="build.main.classpath" debug="off" includeantruntime="true" />
+	</target>
+	
+	<target name="manifest" depends="init">
+		<manifest file="${file.manifest}">
+			<attribute name="Specification-Title" value="Flower Entities" />
+		</manifest>
+	</target>
+	
+	<target name="jar" depends="compile.main,manifest" description="creating jar file">
+		<jar destfile="${dir.out.dist}/${ant.project.name}.jar" manifest="${file.manifest}">
+			<fileset dir="${dir.out.main}">
+				<include name="**" />
+			</fileset>
+		</jar>
+	</target>
+
+</project>

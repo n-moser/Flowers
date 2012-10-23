@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ====================================================================== 
+     Flower EJB
+                   
+     odemirci                                                                
+     ====================================================================== -->
+<project name="org.flowers.ejb" basedir=".">
+
+	<property file="build.properties" />
+
+	<target name="clean" description="cleans the out folder">
+		<delete>
+			<fileset dir="${dir.out}">
+				<include name="**/*"/>
+			</fileset>
+		</delete>
+	</target>
+	
+	<target name="init">
+		<mkdir dir="${dir.out}" />
+		<mkdir dir="${dir.out.main}" />
+		<mkdir dir="${dir.out.main.intf}" />
+		<mkdir dir="${dir.out.main.impl}" />
+		<mkdir dir="${dir.out.test}" />
+		<mkdir dir="${dir.out.dist}" />
+		<mkdir dir="${dir.out.manifest}" />
+	</target>
+
+	<path id="build.main.classpath">
+		<fileset dir="${dir.lib}">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${JBOSS_HOME}/modules">
+			<include name="**/*.jar" />
+		</fileset>
+
+		<pathelement location="${dir.out.main.intf}" />
+
+	</path>
+
+	<target name="fetch.libs">
+		<ant antfile="../org.flowers.entity/build.xml" target="jar" inheritall="false" />
+		<copy todir="${dir.lib}">
+			<fileset dir="../org.flowers.entity/out/ant/dist">
+				<include name="*.jar" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="compile.main.intf" description="compiles the main interface classes" depends="init,fetch.libs">
+		<javac srcdir="${dir.src.main.intf}" destdir="${dir.out.main.intf}" classpathref="build.main.classpath" debug="off" includeantruntime="true" />
+	</target>
+
+	<target name="compile.main.impl" description="compiles the main impl classes" depends="compile.main.intf">
+		<javac srcdir="${dir.src.main.impl}" destdir="${dir.out.main.impl}" classpathref="build.main.classpath" debug="off" includeantruntime="true" />
+	</target>
+
+	<target name="manifest" depends="init">
+		<manifest file="${file.manifest}">
+			<attribute name="Specification-Title" value="Flower EJB" />
+		</manifest>
+	</target>
+
+	<target name="jar.intf" depends="compile.main.intf, manifest">
+		<jar destfile="${dir.out.dist}/${ant.project.name}.intf.jar" manifest="${file.manifest}">
+			<fileset dir="${dir.out.main.intf}">
+				<include name="**" />
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="jar.impl" depends="compile.main.impl, manifest">
+		<jar destfile="${dir.out.dist}/${ant.project.name}.impl.jar" manifest="${file.manifest}">
+			<fileset dir="${dir.out.main.intf}">
+				<include name="**" />
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="jar" depends="jar.intf,jar.impl" description="creating jar file" />
+	
+	<!--
+	
+	ear
+	 - META-INF
+	    - application.xml
+	    - jboss-app.xml
+	
+	org.flowers.abc
+	org.flowers.xyz
+	
+	-->
+	
+	<target name="ear" depends="jar" description="creates the application archive">
+		<ear destfile="${dir.out.dist}/${ant.project.name}.ear" manifest="${file.manifest}" appxml="${dir.conf}/application.xml">
+			<fileset dir="${dir.out.dist}">
+				<include name="*.jar" />
+			</fileset>
+			<fileset dir="${dir.lib}">
+				<include name="*.jar" />
+			</fileset>
+
+			<metainf dir="${dir.conf}">
+				<include name="jboss-app.xml"/>
+			</metainf>
+		</ear>
+	</target>
+
+</project>
